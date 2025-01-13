@@ -161,7 +161,12 @@ class TestUtilities(TestConfig):
         path = (
             f'//a[contains(text(), "{name}")]/../../' '/input[@name="_selected_action"]'
         )
-        driver.find_element(By.XPATH, path).click()
+        
+        element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, path))
+                )
+        element.click()
+          
 
     def action_on_resource(self, name, path, option, driver=None):
         """Perform an action on a resource.
@@ -178,9 +183,10 @@ class TestUtilities(TestConfig):
             driver = self.base_driver
         driver.get(f"{self.config['app_url']}{path}")
         self.select_resource(name)
-        driver.find_element(By.NAME, 'action').find_element(
-            By.XPATH, f'//option[@value="{option}"]'
-        ).click()
+        element = driver.find_element(By.NAME, 'action')
+        WebDriverWait(element, 10).until(
+                    EC.presence_of_element_located((By.XPATH, f'//option[@value="{option}"]'))
+                ).click()
         driver.find_element(By.NAME, 'index').click()
 
     def console_error_check(self, driver=None):
